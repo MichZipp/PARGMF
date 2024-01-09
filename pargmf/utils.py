@@ -21,6 +21,8 @@ from tld import get_tld
 
 log = logging.getLogger(__name__)
 
+
+# Define data types
 class ReturnType(Enum):
     LIST = 1
     DATAFRAME = 2
@@ -64,6 +66,37 @@ class Generalization(Enum):
     FULL = auto()
     BEHAVIOURAL = auto()
     STRUCTURAL = auto()
+
+port_mappings = {
+    21: 'ftp',
+    22: 'ssh',
+    23: 'telnet',
+    25: 'smtp',
+    43: 'whois',
+    53: 'dns',
+    67: 'dhcp',
+    68: 'dhcp',
+    70: 'gopher',
+    79: 'finger',
+    80: 'http',
+    110: 'pop3',
+    119: 'nntp',
+    143: 'imap',
+    194: 'irc',
+    389: 'ldap',
+    443: 'https',
+    465: 'smtps',
+    587: 'smtp',
+    636: 'ldaps',
+    993: 'imaps',
+    995: 'pop3s',
+    1723: 'pptp',
+    3306: 'mysql',
+    3389: 'rdp',
+    5900: 'vnc',
+    8080: 'http'
+}
+
 
 class SysmonEvent():
     def __init__(self, event_id: int, event_data: dict, computer_name: str):
@@ -751,12 +784,31 @@ def get_unique_edge_labels_count(graph: nx.MultiDiGraph) -> int:
     return len(edge_labels)
 
 def get_node_type_frequencies(graph: nx.DiGraph = None) -> dict:
+    """
+    Get node type frequencies
+
+    Args:
+        graph (nx.DiGraph): A NetworkX DiGraph.
+
+    Returns:
+        dict: A dictionary containing node type frequencies.
+    """
     node_types = nx.get_node_attributes(graph, "type")
     (unique, counts) = np.unique(list(node_types.values()), return_counts=True)
     node_type_frequencies = dict(zip(unique, counts))
     return [dict([a, int(x)] for a, x in node_type_frequencies.items())]
 
 def get_edge_type_frequencies(graph: nx.DiGraph = None) -> dict:
+    """
+    Get edge type frequencies
+
+    Args:
+        graph (nx.DiGraph): A NetworkX DiGraph.
+    
+    Returns:
+        dict: A dictionary containing edge type frequencies.
+    """
+
     edge_types = nx.get_edge_attributes(graph, "edge_type")
     (unique, counts) = np.unique(list(edge_types.values()), return_counts=True)
     edge_type_frequencies = dict(zip(unique, counts))
@@ -913,9 +965,17 @@ def draw_graph_graphviz(graph_tmp = None, notebook: bool = True, filename: str =
     else: 
         return filename
     
-def get_signature(source_node, edge, target_node):
+def get_signature(source_node, edge, target_node) -> Tuple[str, str, str, str, str]:
     """
     Get signature of edge
+
+    Args:
+        source_node (dict): The source node.
+        edge (tuple): The edge.
+        target_node (dict): The target node.
+
+    Returns:
+        Tuple[str, str, str, str, str]: A tuple containing the signature of the edge.
     """
     source_label = source_node['label']
     source_type = source_node['type']
@@ -924,18 +984,30 @@ def get_signature(source_node, edge, target_node):
     target_type = target_node['type']
     return (source_label, source_type, edge_type, target_label, target_type)
 
-def get_signatures(graph: nx.Graph):
+def get_signatures(graph: nx.Graph) -> Set[Tuple[str, str, str, str, str]]:
     """
     Get signatures of graph
+
+    Args:
+        graph (nx.Graph): A NetworkX Graph.
+    
+    Returns:
+        Set[Tuple[str, str, str, str, str]]: A set of signatures.
     """
     signatures = list()
     for edge in graph.edges(data=True):
         signatures.append(get_signature(graph.nodes[edge[0]], edge, graph.nodes[edge[1]]))
     return set(signatures)
 
-def signatures_to_graph(signatures: List[Tuple[str, str, str, str, str]]) -> nx.Graph:
+def signatures_to_graph(signatures: List[Tuple[str, str, str, str, str]]) -> nx.MultiDiGraph:
     """
     Create graph from signatures
+
+    Args:
+        signatures (List[Tuple[str, str, str, str, str]]): A list of signatures.
+
+    Returns:
+        nx.MultiDiGraph: A NetworkX MultiDiGraph.
     """
     graph = nx.MultiDiGraph()
     for signature in signatures:
@@ -948,6 +1020,16 @@ def signatures_to_graph(signatures: List[Tuple[str, str, str, str, str]]) -> nx.
     return graph
 
 def signatures_to_df(signatures: List[Tuple[str, str, str, str, str]], signature_label: str) -> pd.DataFrame:
+    """
+    Create DataFrame from signatures
+
+    Args:
+        signatures (List[Tuple[str, str, str, str, str]]): A list of signatures.
+        signature_label (str): The signature label.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing signatures.
+    """
     df = pd.DataFrame.from_records(signatures, columns=['source_id', 'source_type', 'edge_type', 'target_id', 'target_type'])
     df['source_label'] = df['source_id']
     df['target_label'] = df['target_id']
@@ -958,7 +1040,16 @@ def signatures_to_df(signatures: List[Tuple[str, str, str, str, str]], signature
     
     return df
     
-def merge_graphs(graph1: nx.MultiDiGraph, graph2: nx.MultiDiGraph):
+def merge_graphs(graph1: nx.MultiDiGraph, graph2: nx.MultiDiGraph) -> nx.MultiDiGraph:
+    """
+    Merge two graphs
+
+    Args:
+        graph1 (nx.MultiDiGraph): A NetworkX MultiDiGraph.
+        graph2 (nx.MultiDiGraph): A NetworkX MultiDiGraph.
+    Returns:
+        nx.MultiDiGraph: A NetworkX MultiDiGraph.
+    """
     sig_graph1 = get_signatures(graph1)
     sig_graph2 = get_signatures(graph2)
     
@@ -1112,37 +1203,6 @@ def split_ip_port(input: str) -> Tuple[str, str]:
     """
     ip, _, port = input.rpartition(':')
     return ip, int(port)
-
-
-port_mappings = {
-    21: 'ftp',
-    22: 'ssh',
-    23: 'telnet',
-    25: 'smtp',
-    43: 'whois',
-    53: 'dns',
-    67: 'dhcp',
-    68: 'dhcp',
-    70: 'gopher',
-    79: 'finger',
-    80: 'http',
-    110: 'pop3',
-    119: 'nntp',
-    143: 'imap',
-    194: 'irc',
-    389: 'ldap',
-    443: 'https',
-    465: 'smtps',
-    587: 'smtp',
-    636: 'ldaps',
-    993: 'imaps',
-    995: 'pop3s',
-    1723: 'pptp',
-    3306: 'mysql',
-    3389: 'rdp',
-    5900: 'vnc',
-    8080: 'http'
-}
 
 
 def generalize_registry_key(key, segments: int=4) -> str:
