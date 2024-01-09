@@ -1,0 +1,10 @@
+evtx==0.8.3
+ipython==8.4.0
+lib==4.0.0
+loguru==0.7.2
+networkx==2.8.4
+numpy==1.21.5
+pandas==1.4.4
+shortuuid==1.0.11
+tld==0.13
+tqdm==4.64.1
