@@ -20,9 +20,9 @@ __author__ = "Michael Zipperle"
 __version__ = "0.0.1"
 
 
-class Graph(Processing):
+class PARGMF(Processing):
     """
-    Capev2 Graph Processing Module
+    CAPEv2 PARGMF Processing Module
     """
     def run(self):
         try:
