@@ -7,15 +7,15 @@ With the rapidly increasing volume of cyber-attacks over the past years due to t
 ## Citation
 
 If you use the code in this repository, please cite the following paper:
-```
+```bib
 @article{ZIPPERLE2024103682,
-title = {PARGMF: A provenance-enabled automated rule generation and matching framework with multi-level attack description model},
-journal = {Journal of Information Security and Applications},
-volume = {81},
-pages = {103682},
-year = {2024},
-issn = {2214-2126},
-doi = {https://doi.org/10.1016/j.jisa.2023.103682}
+    title = {PARGMF: A provenance-enabled automated rule generation and matching framework with multi-level attack description model},
+    journal = {Journal of Information Security and Applications},
+    volume = {81},
+    pages = {103682},
+    year = {2024},
+    issn = {2214-2126},
+    doi = {https://doi.org/10.1016/j.jisa.2023.103682}
 }
 ```
 
